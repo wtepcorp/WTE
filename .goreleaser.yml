@@ -1,0 +1,104 @@
+# GoReleaser configuration
+# Documentation: https://goreleaser.com
+
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+
+builds:
+  - id: wte
+    main: ./cmd/wte
+    binary: wte
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+      - arm
+    goarm:
+      - "7"
+    ldflags:
+      - -s -w
+      - -X wte/internal/cli.Version={{.Version}}
+      - -X wte/internal/cli.BuildTime={{.Date}}
+      - -X wte/internal/cli.GitCommit={{.ShortCommit}}
+
+archives:
+  - id: default
+    format: tar.gz
+    name_template: >-
+      {{ .ProjectName }}-
+      {{- .Os }}-
+      {{- if eq .Arch "amd64" }}amd64
+      {{- else if eq .Arch "arm64" }}arm64
+      {{- else if eq .Arch "arm" }}armv7
+      {{- else }}{{ .Arch }}{{ end }}
+    files:
+      - README.md
+      - LICENSE*
+
+checksum:
+  name_template: 'checksums.txt'
+  algorithm: sha256
+
+changelog:
+  sort: asc
+  use: github
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'
+      - '^ci:'
+      - '^chore:'
+      - Merge pull request
+      - Merge branch
+  groups:
+    - title: '🚀 Features'
+      regexp: '^feat'
+      order: 0
+    - title: '🐛 Bug Fixes'
+      regexp: '^fix'
+      order: 1
+    - title: '📦 Dependencies'
+      regexp: '^deps'
+      order: 2
+    - title: '🔧 Other'
+      order: 999
+
+release:
+  github:
+    owner: wtepcorp
+    name: WTE
+  draft: false
+  prerelease: auto
+  mode: replace
+  header: |
+    ## WTE {{ .Tag }}
+
+    ### Installation
+
+    ```bash
+    # Download and install (Linux amd64)
+    curl -Lo wte.tar.gz https://github.com/wtepcorp/WTE/releases/download/{{ .Tag }}/wte-linux-amd64.tar.gz
+    tar -xzf wte-linux-amd64.tar.gz
+    sudo mv wte-linux-amd64 /usr/local/bin/wte
+    sudo chmod +x /usr/local/bin/wte
+
+    # Or if you already have wte installed:
+    sudo wte update
+    ```
+
+  footer: |
+    ---
+    **Full Changelog**: https://github.com/wtepcorp/WTE/compare/{{ .PreviousTag }}...{{ .Tag }}
+
+# Announce to different channels (optional)
+# announce:
+#   telegram:
+#     enabled: true
+#     chat_id: YOUR_CHAT_ID

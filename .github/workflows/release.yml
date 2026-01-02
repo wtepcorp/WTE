@@ -1,0 +1,77 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.21'
+          cache: true
+
+      - name: Get version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Run tests
+        run: go test -v ./...
+
+      - name: Build binaries
+        run: |
+          VERSION=${{ steps.version.outputs.VERSION }}
+          BUILD_TIME=$(date -u '+%Y-%m-%d_%H:%M:%S')
+          GIT_COMMIT=${GITHUB_SHA::8}
+
+          LDFLAGS="-s -w -X wte/internal/cli.Version=${VERSION#v} -X wte/internal/cli.BuildTime=${BUILD_TIME} -X wte/internal/cli.GitCommit=${GIT_COMMIT}"
+
+          mkdir -p dist
+
+          # Linux AMD64
+          echo "Building linux/amd64..."
+          GOOS=linux GOARCH=amd64 go build -ldflags "${LDFLAGS}" -o dist/wte-linux-amd64 ./cmd/wte
+          tar -czf dist/wte-linux-amd64.tar.gz -C dist wte-linux-amd64
+
+          # Linux ARM64
+          echo "Building linux/arm64..."
+          GOOS=linux GOARCH=arm64 go build -ldflags "${LDFLAGS}" -o dist/wte-linux-arm64 ./cmd/wte
+          tar -czf dist/wte-linux-arm64.tar.gz -C dist wte-linux-arm64
+
+          # Linux ARMv7
+          echo "Building linux/arm..."
+          GOOS=linux GOARCH=arm GOARM=7 go build -ldflags "${LDFLAGS}" -o dist/wte-linux-armv7 ./cmd/wte
+          tar -czf dist/wte-linux-armv7.tar.gz -C dist wte-linux-armv7
+
+      - name: Generate checksums
+        run: |
+          cd dist
+          sha256sum *.tar.gz > checksums.txt
+          cat checksums.txt
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: WTE ${{ steps.version.outputs.VERSION }}
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          files: |
+            dist/*.tar.gz
+            dist/checksums.txt
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
