@@ -5,79 +5,79 @@
 [![Go Version](https://img.shields.io/badge/go-1.21+-blue.svg)](https://golang.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-**Window to Europe** — CLI tool for managing proxy infrastructure based on GOST. Easily install, configure, and manage HTTP, HTTPS, and Shadowsocks proxy servers on Linux.
+**Window to Europe** — CLI-инструмент для управления прокси-инфраструктурой на базе GOST. Позволяет легко устанавливать, настраивать и управлять HTTP, HTTPS и Shadowsocks прокси-серверами на Linux.
 
-## Features
+## Возможности
 
-- **HTTP Proxy** — Classic proxy for browsers and applications
-- **HTTPS Proxy** — Proxy with TLS encryption
-- **Shadowsocks** — Protocol for bypassing restrictions
-- **Flexible Configuration** — Enable/disable authentication, choose ports
-- **Automatic Setup** — Firewall, systemd, password generation
-- **Easy Management** — start, stop, restart, status, logs
+- **HTTP Proxy** — Классический прокси для браузеров и приложений
+- **HTTPS Proxy** — Прокси с TLS-шифрованием
+- **Shadowsocks** — Протокол для обхода ограничений
+- **Гибкая настройка** — Включение/отключение аутентификации, выбор портов
+- **Автоматическая настройка** — Файрвол, systemd, генерация паролей
+- **Простое управление** — start, stop, restart, status, logs
 
 ---
 
-## Quick Install
+## Быстрая установка
 
 ```bash
 curl -sfL https://raw.githubusercontent.com/wtepcorp/WTE/main/install.sh | sudo bash
 ```
 
-## Manual Installation
+## Ручная установка
 
-### Option 1: Download Binary
+### Вариант 1: Скачать бинарник
 
 ```bash
-# Download latest version
+# Скачать последнюю версию
 wget https://github.com/wtepcorp/WTE/releases/latest/download/wte-linux-amd64.tar.gz
 
-# Extract
+# Распаковать
 tar -xzf wte-linux-amd64.tar.gz
 
-# Install
+# Установить
 sudo mv wte-linux-amd64 /usr/local/bin/wte
 sudo chmod +x /usr/local/bin/wte
 
-# Verify
+# Проверить
 wte version
 ```
 
-### Option 2: Build from Source
+### Вариант 2: Сборка из исходников
 
 ```bash
-# Install Go (if not installed)
+# Установить Go (если не установлен)
 sudo apt update && sudo apt install -y golang-go
 
-# Clone repository
+# Клонировать репозиторий
 git clone https://github.com/wtepcorp/WTE.git
 cd WTE
 
-# Build and install
+# Собрать и установить
 make build
 sudo make install
 
-# Verify
+# Проверить
 wte version
 ```
 
 ---
 
-## Quick Start
+## Быстрый старт
 
-### Install Proxy Server
+### Установка прокси-сервера
 
 ```bash
-# Basic installation (HTTP + Shadowsocks with auto-generated passwords)
+# Базовая установка (HTTP + Shadowsocks с автогенерацией паролей)
 sudo wte install
 
-# HTTP proxy only (no Shadowsocks)
+# Только HTTP прокси (без Shadowsocks)
 sudo wte install --ss-enabled=false
 
-# Installation without authentication
+# Установка без аутентификации
 sudo wte install --http-no-auth
 
-# Custom settings
+# Пользовательские настройки
 sudo wte install \
     --http-port 3128 \
     --http-user admin \
@@ -85,125 +85,125 @@ sudo wte install \
     --ss-port 8388
 ```
 
-Connection credentials will be displayed after installation.
+После установки будут показаны данные для подключения.
 
-### Service Management
+### Управление сервисом
 
 ```bash
-# Check status
+# Проверить статус
 sudo wte status
 
-# Stop
+# Остановить
 sudo wte stop
 
-# Start
+# Запустить
 sudo wte start
 
-# Restart
+# Перезапустить
 sudo wte restart
 
-# View logs
+# Просмотр логов
 sudo wte logs
 
-# Follow logs in real-time
+# Следить за логами в реальном времени
 sudo wte logs -f
 ```
 
-### View Credentials
+### Просмотр учётных данных
 
 ```bash
-# Show all connection details
+# Показать все данные для подключения
 sudo wte credentials
 
-# Show Shadowsocks URI only (for import)
+# Показать только Shadowsocks URI (для импорта)
 sudo wte credentials --uri
 
-# Regenerate passwords
+# Перегенерировать пароли
 sudo wte credentials --regenerate
 ```
 
-### Configuration Management
+### Управление конфигурацией
 
 ```bash
-# Show current configuration
+# Показать текущую конфигурацию
 wte config show
 
-# Change HTTP proxy port
+# Изменить порт HTTP прокси
 sudo wte config set http.port 3128
 
-# Disable authentication
+# Отключить аутентификацию
 sudo wte config set http.auth.enabled false
 
-# Enable Shadowsocks
+# Включить Shadowsocks
 sudo wte config set shadowsocks.enabled true
 
-# Apply changes (regenerate config and restart)
+# Применить изменения (перегенерировать конфиг и перезапустить)
 sudo wte config apply
 
-# Open config in editor
+# Открыть конфиг в редакторе
 sudo wte config edit
 
-# Reset to defaults
+# Сбросить к настройкам по умолчанию
 sudo wte config reset
 ```
 
-### Update WTE
+### Обновление WTE
 
 ```bash
-# Check for updates
+# Проверить наличие обновлений
 sudo wte update --check
 
-# Update to latest version
+# Обновить до последней версии
 sudo wte update
 
-# Force reinstall
+# Принудительно переустановить
 sudo wte update --force
 ```
 
-### Uninstall
+### Удаление
 
 ```bash
-# Complete uninstall
+# Полное удаление
 sudo wte uninstall
 
-# Uninstall without confirmation
+# Удаление без подтверждения
 sudo wte uninstall --force
 
-# Uninstall but keep credentials file
+# Удалить, но сохранить файл с учётными данными
 sudo wte uninstall --keep-creds
 ```
 
 ---
 
-## Installation Options
+## Параметры установки
 
-| Flag | Description | Default |
-|------|-------------|---------|
-| `--http-port` | HTTP proxy port | 8080 |
-| `--http-user` | Username | proxyuser |
-| `--http-pass` | Password (auto-generated if empty) | — |
-| `--http-no-auth` | Disable authentication | false |
-| `--ss-enabled` | Enable Shadowsocks | true |
-| `--ss-port` | Shadowsocks port | 9500 |
-| `--ss-password` | SS password (auto-generated if empty) | — |
-| `--ss-method` | Encryption method | aes-128-gcm |
-| `--https-enabled` | Enable HTTPS proxy | false |
-| `--https-port` | HTTPS proxy port | 8443 |
-| `--skip-firewall` | Don't configure firewall | false |
-| `--gost-version` | GOST version | 3.0.0-rc10 |
+| Флаг | Описание | По умолчанию |
+|------|----------|--------------|
+| `--http-port` | Порт HTTP прокси | 8080 |
+| `--http-user` | Имя пользователя | proxyuser |
+| `--http-pass` | Пароль (автогенерация если пусто) | — |
+| `--http-no-auth` | Отключить аутентификацию | false |
+| `--ss-enabled` | Включить Shadowsocks | true |
+| `--ss-port` | Порт Shadowsocks | 9500 |
+| `--ss-password` | Пароль SS (автогенерация если пусто) | — |
+| `--ss-method` | Метод шифрования | aes-128-gcm |
+| `--https-enabled` | Включить HTTPS прокси | false |
+| `--https-port` | Порт HTTPS прокси | 8443 |
+| `--skip-firewall` | Не настраивать файрвол | false |
+| `--gost-version` | Версия GOST | 3.0.0-rc10 |
 
 ---
 
-## Connecting to Proxy
+## Подключение к прокси
 
 ### HTTP Proxy
 
-**Browser / System Settings:**
+**Браузер / Системные настройки:**
 ```
-Host: <server IP>
-Port: 8080
-Login: proxyuser
-Password: <your password>
+Хост: <IP сервера>
+Порт: 8080
+Логин: proxyuser
+Пароль: <ваш пароль>
 ```
 
 **curl:**
@@ -211,7 +211,7 @@ Password: <your password>
 curl -x http://proxyuser:PASSWORD@SERVER_IP:8080 https://ifconfig.me
 ```
 
-**Environment Variables:**
+**Переменные окружения:**
 ```bash
 export http_proxy="http://proxyuser:PASSWORD@SERVER_IP:8080"
 export https_proxy="http://proxyuser:PASSWORD@SERVER_IP:8080"
@@ -219,59 +219,59 @@ export https_proxy="http://proxyuser:PASSWORD@SERVER_IP:8080"
 
 ### Shadowsocks
 
-**Client Settings:**
+**Настройки клиента:**
 ```
-Server: <server IP>
-Port: 9500
-Password: <your password>
-Encryption: aes-128-gcm
+Сервер: <IP сервера>
+Порт: 9500
+Пароль: <ваш пароль>
+Шифрование: aes-128-gcm
 ```
 
-**Clients:**
+**Клиенты:**
 - **iOS:** Shadowrocket, Surge, Quantumult
 - **Android:** Shadowsocks, v2rayNG
 - **Windows:** Shadowsocks-windows, v2rayN
 - **macOS:** ShadowsocksX-NG, Surge
 - **Linux:** shadowsocks-libev, shadowsocks-rust
 
-**Import via URI:**
+**Импорт по URI:**
 ```bash
-# Get URI for import
+# Получить URI для импорта
 sudo wte credentials --uri
-# Example: ss://YWVzLTEyOC1nY206cGFzc3dvcmQ=@1.2.3.4:9500#WTE-Proxy
+# Пример: ss://YWVzLTEyOC1nY206cGFzc3dvcmQ=@1.2.3.4:9500#WTE-Proxy
 ```
 
 ---
 
-## File Locations
+## Расположение файлов
 
-| File | Description |
-|------|-------------|
-| `/usr/local/bin/gost` | GOST binary |
-| `/etc/wte/config.yaml` | WTE configuration |
-| `/etc/gost/config.yaml` | GOST configuration |
-| `/etc/systemd/system/gost.service` | Systemd service |
-| `/root/proxy-credentials.txt` | Credentials file |
+| Файл | Описание |
+|------|----------|
+| `/usr/local/bin/gost` | Бинарник GOST |
+| `/etc/wte/config.yaml` | Конфигурация WTE |
+| `/etc/gost/config.yaml` | Конфигурация GOST |
+| `/etc/systemd/system/gost.service` | Systemd сервис |
+| `/root/proxy-credentials.txt` | Файл с учётными данными |
 
 ---
 
-## Usage Examples
+## Примеры использования
 
-### Example 1: Simple Proxy for Personal Use
+### Пример 1: Простой прокси для личного использования
 
 ```bash
 sudo wte install
 sudo wte credentials
 ```
 
-### Example 2: Public Proxy Without Authentication
+### Пример 2: Публичный прокси без аутентификации
 
 ```bash
-# Warning: not recommended for public servers!
+# Внимание: не рекомендуется для публичных серверов!
 sudo wte install --http-no-auth --ss-enabled=false
 ```
 
-### Example 3: Shadowsocks Only on Non-Standard Port
+### Пример 3: Только Shadowsocks на нестандартном порту
 
 ```bash
 sudo wte install \
@@ -281,7 +281,7 @@ sudo wte install \
     --ss-method chacha20-ietf-poly1305
 ```
 
-### Example 4: Corporate Proxy with HTTPS
+### Пример 4: Корпоративный прокси с HTTPS
 
 ```bash
 sudo wte install \
@@ -295,47 +295,47 @@ sudo wte install \
 
 ---
 
-## Troubleshooting
+## Устранение неполадок
 
-### Service Not Starting
+### Сервис не запускается
 
 ```bash
-# Check status
+# Проверить статус
 sudo systemctl status gost
 
-# View logs
+# Посмотреть логи
 sudo journalctl -u gost -n 50
 
-# Check configuration
+# Проверить конфигурацию
 cat /etc/gost/config.yaml
 ```
 
-### Port Already in Use
+### Порт уже занят
 
 ```bash
-# Check what's using the port
+# Проверить что занимает порт
 sudo ss -tlnp | grep 8080
 
-# Use different port
+# Использовать другой порт
 sudo wte config set http.port 3128
 sudo wte config apply
 ```
 
-### Cannot Connect from Outside
+### Не удаётся подключиться снаружи
 
 ```bash
-# Check firewall
+# Проверить файрвол
 sudo ufw status
-# or
+# или
 sudo firewall-cmd --list-all
 
-# Manually open port (UFW)
+# Открыть порт вручную (UFW)
 sudo ufw allow 8080/tcp
 sudo ufw allow 9500/tcp
 sudo ufw allow 9500/udp
 ```
 
-### Reset and Start Fresh
+### Сброс и переустановка
 
 ```bash
 sudo wte uninstall --force
@@ -344,39 +344,39 @@ sudo wte install
 
 ---
 
-## Global Flags
+## Глобальные флаги
 
-| Flag | Description |
-|------|-------------|
-| `-c, --config` | Config file path |
-| `-v, --verbose` | Verbose output |
-| `-q, --quiet` | Minimal output (errors only) |
-| `--no-color` | Disable colored output |
-| `-h, --help` | Show help |
-
----
-
-## Requirements
-
-- **OS:** Ubuntu 18.04+, Debian 10+, CentOS 7+, Fedora 38+, Arch Linux
-- **Architecture:** x86_64 (amd64), ARM64, ARMv7
-- **Privileges:** root (sudo)
-- **Network:** Access to GitHub for downloading GOST
+| Флаг | Описание |
+|------|----------|
+| `-c, --config` | Путь к файлу конфигурации |
+| `-v, --verbose` | Подробный вывод |
+| `-q, --quiet` | Минимальный вывод (только ошибки) |
+| `--no-color` | Отключить цветной вывод |
+| `-h, --help` | Показать справку |
 
 ---
 
-## Contributing
+## Требования
 
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+- **ОС:** Ubuntu 18.04+, Debian 10+, CentOS 7+, Fedora 38+, Arch Linux
+- **Архитектура:** x86_64 (amd64), ARM64, ARMv7
+- **Права:** root (sudo)
+- **Сеть:** Доступ к GitHub для скачивания GOST
 
 ---
 
-## License
+## Участие в разработке
 
-MIT License - see [LICENSE](LICENSE) file for details.
+Мы рады вашим контрибуциям! Пожалуйста, создавайте Pull Request'ы.
+
+1. Сделайте форк репозитория
+2. Создайте ветку для функционала (`git checkout -b feature/amazing-feature`)
+3. Закоммитьте изменения (`git commit -m 'Add some amazing feature'`)
+4. Запушьте в ветку (`git push origin feature/amazing-feature`)
+5. Откройте Pull Request
+
+---
+
+## Лицензия
+
+MIT License — подробности в файле [LICENSE](LICENSE).

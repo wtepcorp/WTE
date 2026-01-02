@@ -1,135 +1,135 @@
-# Release Guide
+# Руководство по релизам
 
-## Process Overview
+## Обзор процесса
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                     RELEASE PROCESS                              │
+│                     ПРОЦЕСС РЕЛИЗА                              │
 ├─────────────────────────────────────────────────────────────────┤
 │                                                                 │
-│   1. Make changes → 2. Update version → 3. Create tag          │
+│   1. Внесение изменений → 2. Обновление версии → 3. Создание тега │
 │                                │                                │
 │                                ▼                                │
-│   4. Push tag → 5. GitHub Actions builds → 6. Release ready    │
+│   4. Пуш тега → 5. Сборка GitHub Actions → 6. Релиз готов       │
 │                                                                 │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## Semantic Versioning
+## Семантическое версионирование
 
-Use format `vMAJOR.MINOR.PATCH`:
+Используйте формат `vMAJOR.MINOR.PATCH`:
 
-| Change Type | When to Increment | Example |
-|-------------|-------------------|---------|
-| **MAJOR** | Breaking API changes | v1.0.0 → v2.0.0 |
-| **MINOR** | New features (backward compatible) | v1.0.0 → v1.1.0 |
-| **PATCH** | Bug fixes | v1.0.0 → v1.0.1 |
+| Тип изменения | Когда увеличивать | Пример |
+|---------------|-------------------|--------|
+| **MAJOR** | Ломающие изменения API | v1.0.0 → v2.0.0 |
+| **MINOR** | Новые функции (обратная совместимость) | v1.0.0 → v1.1.0 |
+| **PATCH** | Исправление ошибок | v1.0.0 → v1.0.1 |
 
-**Examples:**
-- Added new `wte backup` command → **MINOR** (v1.1.0)
-- Fixed bug in `wte install` → **PATCH** (v1.0.1)
-- Changed config format (old configs don't work) → **MAJOR** (v2.0.0)
+**Примеры:**
+- Добавлена новая команда `wte backup` → **MINOR** (v1.1.0)
+- Исправлена ошибка в `wte install` → **PATCH** (v1.0.1)
+- Изменён формат конфига (старые конфиги не работают) → **MAJOR** (v2.0.0)
 
 ---
 
-## Step-by-Step Release Instructions
+## Пошаговая инструкция релиза
 
-### Step 1: Ensure Code is Ready
+### Шаг 1: Убедитесь, что код готов
 
 ```bash
-# Make sure you're on main branch
+# Убедитесь, что вы на ветке main
 git checkout main
 git pull origin main
 
-# Run tests
+# Запустите тесты
 make test
 
-# Verify it builds
+# Проверьте, что собирается
 make build
 
-# Run linter
+# Запустите линтер
 make lint
 ```
 
-### Step 2: Update Version in Code
+### Шаг 2: Обновите версию в коде
 
-Edit file `internal/cli/root.go`:
+Отредактируйте файл `internal/cli/root.go`:
 
 ```go
 var (
-    Version   = "1.1.0"  // ← Update version
+    Version   = "1.1.0"  // ← Обновите версию
     BuildTime = "unknown"
     GitCommit = "unknown"
 )
 ```
 
-### Step 3: Update CHANGELOG (Optional)
+### Шаг 3: Обновите CHANGELOG (опционально)
 
-If you maintain CHANGELOG.md, add a section:
+Если ведёте CHANGELOG.md, добавьте секцию:
 
 ```markdown
 ## [1.1.0] - 2024-01-15
 
-### Added
-- New `wte backup` command for backups
+### Добавлено
+- Новая команда `wte backup` для резервного копирования
 
-### Fixed
-- Fixed ARM64 installation error
+### Исправлено
+- Исправлена ошибка установки на ARM64
 
-### Changed
-- Improved `wte status` output
+### Изменено
+- Улучшен вывод `wte status`
 ```
 
-### Step 4: Commit Changes
+### Шаг 4: Закоммитьте изменения
 
 ```bash
 git add -A
 git commit -m "chore: bump version to v1.1.0"
 ```
 
-### Step 5: Create Tag
+### Шаг 5: Создайте тег
 
 ```bash
-# Create annotated tag
+# Создать аннотированный тег
 git tag -a v1.1.0 -m "Release v1.1.0"
 
-# Or with change description
+# Или с описанием изменений
 git tag -a v1.1.0 -m "Release v1.1.0
 
-- Added wte backup command
-- Fixed ARM64 installation
-- Improved status output"
+- Добавлена команда wte backup
+- Исправлена установка на ARM64
+- Улучшен вывод статуса"
 ```
 
-### Step 6: Push Commit and Tag
+### Шаг 6: Запушьте коммит и тег
 
 ```bash
-# Push commit
+# Запушить коммит
 git push origin main
 
-# Push tag (triggers GitHub Actions)
+# Запушить тег (запускает GitHub Actions)
 git push origin v1.1.0
 
-# Or push all tags
+# Или запушить все теги
 git push --tags
 ```
 
-### Step 7: Verify Release
+### Шаг 7: Проверьте релиз
 
-1. Go to GitHub → Releases
-2. Verify workflow started (Actions → Release)
-3. Wait for completion (usually 2-3 minutes)
-4. Verify binaries are uploaded
+1. Перейдите на GitHub → Releases
+2. Проверьте, что workflow запустился (Actions → Release)
+3. Дождитесь завершения (обычно 2-3 минуты)
+4. Проверьте, что бинарники загружены
 
 ---
 
-## Alternative: Using GoReleaser
+## Альтернатива: Использование GoReleaser
 
-If you prefer GoReleaser (more powerful tool):
+Если предпочитаете GoReleaser (более мощный инструмент):
 
-### Install GoReleaser
+### Установка GoReleaser
 
 ```bash
 # macOS
@@ -138,41 +138,41 @@ brew install goreleaser
 # Linux
 go install github.com/goreleaser/goreleaser@latest
 
-# Or download binary
+# Или скачать бинарник
 curl -sfL https://goreleaser.com/static/run | bash
 ```
 
-### Local Build (No Release)
+### Локальная сборка (без релиза)
 
 ```bash
-# Build without publishing
+# Собрать без публикации
 goreleaser build --snapshot --clean
 ```
 
-### Release via GoReleaser
+### Релиз через GoReleaser
 
 ```bash
-# Create tag
+# Создать тег
 git tag -a v1.1.0 -m "Release v1.1.0"
 git push origin v1.1.0
 
-# GoReleaser will run automatically via GitHub Actions
-# Or manually:
+# GoReleaser запустится автоматически через GitHub Actions
+# Или вручную:
 export GITHUB_TOKEN="your_github_token"
 goreleaser release --clean
 ```
 
 ---
 
-## Repository Setup on GitHub
+## Настройка репозитория на GitHub
 
-### 1. Enable GitHub Actions
+### 1. Включите GitHub Actions
 
 1. GitHub → Settings → Actions → General
-2. Select "Allow all actions"
-3. In "Workflow permissions" section select "Read and write permissions"
+2. Выберите "Allow all actions"
+3. В секции "Workflow permissions" выберите "Read and write permissions"
 
-### 2. Create First Release
+### 2. Создайте первый релиз
 
 ```bash
 git tag -a v1.0.0 -m "Initial release"
@@ -181,57 +181,57 @@ git push origin v1.0.0
 
 ---
 
-## Release Structure
+## Структура релиза
 
-After successful release, GitHub will have:
+После успешного релиза на GitHub будет:
 
 ```
 Release v1.1.0
-├── wte-linux-amd64.tar.gz      # For standard servers
-├── wte-linux-arm64.tar.gz      # For ARM servers (AWS Graviton, etc.)
-├── wte-linux-armv7.tar.gz      # For Raspberry Pi
-└── checksums.txt                # SHA256 checksums
+├── wte-linux-amd64.tar.gz      # Для стандартных серверов
+├── wte-linux-arm64.tar.gz      # Для ARM серверов (AWS Graviton и т.д.)
+├── wte-linux-armv7.tar.gz      # Для Raspberry Pi
+└── checksums.txt                # SHA256 контрольные суммы
 ```
 
 ---
 
-## Update Mechanism for Users
+## Механизм обновления для пользователей
 
-### Automatic Update
+### Автоматическое обновление
 
-Users with installed WTE can update with:
+Пользователи с установленным WTE могут обновиться командой:
 
 ```bash
-# Check for updates
+# Проверить наличие обновлений
 sudo wte update --check
 
-# Update to latest version
+# Обновить до последней версии
 sudo wte update
 
-# Force reinstall current version
+# Принудительно переустановить текущую версию
 sudo wte update --force
 ```
 
-### Manual Update
+### Ручное обновление
 
 ```bash
-# Download new version
+# Скачать новую версию
 wget https://github.com/wtepcorp/WTE/releases/latest/download/wte-linux-amd64.tar.gz
 
-# Extract
+# Распаковать
 tar -xzf wte-linux-amd64.tar.gz
 
-# Replace binary
+# Заменить бинарник
 sudo mv wte-linux-amd64 /usr/local/bin/wte
 sudo chmod +x /usr/local/bin/wte
 
-# Verify version
+# Проверить версию
 wte version
 ```
 
-### Update via Script
+### Обновление через скрипт
 
-Provide users with script:
+Предоставьте пользователям скрипт:
 
 ```bash
 curl -sfL https://raw.githubusercontent.com/wtepcorp/WTE/main/install.sh | sudo bash
@@ -239,47 +239,47 @@ curl -sfL https://raw.githubusercontent.com/wtepcorp/WTE/main/install.sh | sudo 
 
 ---
 
-## Pre-Release Checklist
+## Чеклист перед релизом
 
-- [ ] All tests pass (`make test`)
-- [ ] Code compiles (`make build`)
-- [ ] Linter passes (`make lint`)
-- [ ] Version updated in `internal/cli/root.go`
-- [ ] CHANGELOG updated (if maintained)
-- [ ] Commit pushed to main
-- [ ] Tag created and pushed
-- [ ] GitHub Actions completed successfully
-- [ ] Binaries available on Releases page
+- [ ] Все тесты проходят (`make test`)
+- [ ] Код компилируется (`make build`)
+- [ ] Линтер проходит (`make lint`)
+- [ ] Версия обновлена в `internal/cli/root.go`
+- [ ] CHANGELOG обновлён (если ведётся)
+- [ ] Коммит запушен в main
+- [ ] Тег создан и запушен
+- [ ] GitHub Actions завершился успешно
+- [ ] Бинарники доступны на странице Releases
 
 ---
 
-## Rolling Back a Release
+## Откат релиза
 
-If something goes wrong:
+Если что-то пошло не так:
 
 ```bash
-# Delete tag locally
+# Удалить тег локально
 git tag -d v1.1.0
 
-# Delete tag on GitHub
+# Удалить тег на GitHub
 git push origin :refs/tags/v1.1.0
 
-# Delete release manually on GitHub
+# Удалить релиз вручную на GitHub
 # Settings → Releases → Delete
 ```
 
 ---
 
-## FAQ
+## Часто задаваемые вопросы
 
-**Q: How often to release?**
-A: As needed. Accumulate minor fixes, release critical bugs immediately.
+**В: Как часто выпускать релизы?**
+О: По мере необходимости. Накапливайте мелкие исправления, критические баги выпускайте сразу.
 
-**Q: Do I need to test on all platforms?**
-A: Preferably test on primary platform (linux/amd64). ARM can be verified in CI.
+**В: Нужно ли тестировать на всех платформах?**
+О: Желательно протестировать на основной платформе (linux/amd64). ARM можно проверить в CI.
 
-**Q: What if I forgot to update version in code?**
-A: GitHub Actions will substitute version from tag via ldflags. But better to update for consistency.
+**В: Что если забыл обновить версию в коде?**
+О: GitHub Actions подставит версию из тега через ldflags. Но лучше обновлять для консистентности.
 
-**Q: Can I release a pre-release?**
-A: Yes, use tags like `v1.1.0-beta.1` or `v1.1.0-rc.1`.
+**В: Можно ли выпустить пре-релиз?**
+О: Да, используйте теги вида `v1.1.0-beta.1` или `v1.1.0-rc.1`.
